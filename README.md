@@ -1,6 +1,6 @@
 # Animal police bot
 
-Don't forget to create `config.py`
+Don't forget to create `config.py` in `bot/` folder 
 
 ```python
 BOT_TOKEN = '7837654243:AAFvi8bcbTYoCr44nvkTb1eWtIxUmv13Zg4'
