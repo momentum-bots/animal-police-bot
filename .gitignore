@@ -1,0 +1,5 @@
+bot/config.py
+bot/__pycache__/
+bot/.idea/
+bot/.git/
+.idea/
