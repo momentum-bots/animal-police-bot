@@ -1,11 +1,24 @@
 from bot_object import bot
+from database import User
 
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     try:
-        bot.send_message(message.chat.id,
-                         'Hello, human! We are animals!')
+        user = User.objects(user_id=message.from_user.id).first()
+        if user is None:
+            user = User(user_id=message.from_user.id,
+                        username=message.from_user.username,
+                        first_name=message.from_user.first_name,
+                        last_name=message.from_user.last_name,
+                        state='start'
+                        )
+            user.save()
+            bot.send_message(message.chat.id,
+                             'Даров, {}!'.format(user.first_name))
+        else:
+            bot.send_message(message.chat.id,
+                             'Даров, {}! Ты нам уже писал.'.format(user.first_name))
     except Exception as e:
         print(e)
 
