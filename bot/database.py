@@ -13,4 +13,4 @@ class User(Document):
     first_name = StringField()
     last_name = StringField()
     state = StringField()
-    language = StringField(choices=LANGUAGES, default='ru')
+    language = StringField(choices=LANGUAGES, default=LANGUAGES[0])
