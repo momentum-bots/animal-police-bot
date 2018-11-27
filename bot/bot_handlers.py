@@ -16,7 +16,8 @@ def send_welcome(message):
                         )
             user.save()
         else:
-            user.update(state='choose_language_state')
+            user.state = 'choose_language_state'
+            user.save()
         get_state_and_process(message, user, True)
     except Exception as e:
         print(e)
