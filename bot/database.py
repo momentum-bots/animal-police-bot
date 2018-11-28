@@ -14,3 +14,16 @@ class User(Document):
     last_name = StringField()
     state = StringField()
     language = StringField(choices=LANGUAGES, default=LANGUAGES[0])
+    current_pet = IntField()
+    current_pet_by_filters = ListField(IntField())
+
+
+class Pet(Document):
+    pet_id = SequenceField()
+    user_id = IntField(required=True)
+    kind = StringField()
+    sex = BooleanField(default=False)    # False - мужской, True - женский
+    breed = StringField()
+    age = StringField()
+    description = StringField()
+    view = BooleanField(default=False)  # Можно ли отображать
