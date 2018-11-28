@@ -9,9 +9,9 @@ states = {'choose_language_state': choose_language_state,
           'add_pet_description_state': add_pet_description_state,
           'add_pet_age_state': add_pet_age_state,
           'add_pet_confirmation_state': add_pet_confirmation_state,
-          'want_take_pet_state':want_take_pet_state,
-          'lost_pet_state':lost_pet_state,
-          'help_state':help_state}
+          'want_take_pet_state': want_take_pet_state,
+          'lost_pet_state': lost_pet_state,
+          'help_state': help_state}
 
 
 def get_state_and_process(message, user: User, is_entry=False):

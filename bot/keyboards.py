@@ -9,7 +9,7 @@ def get_languages_keyboard(language='ww'):
     return keyboard
 
 
-def get_main_menu_keyboard(language='ww'):
+def get_main_menu_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(DICTIONARY[language]['wanna_take_btn'],
                  DICTIONARY[language]['wanna_leave_btn'])
@@ -19,7 +19,7 @@ def get_main_menu_keyboard(language='ww'):
     return keyboard
 
 
-def get_add_pet_kind_state_keyboard(language='ww'):
+def get_add_pet_kind_state_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['dog_btn'])
     keyboard.add(DICTIONARY[language]['cat_btn'])
@@ -27,13 +27,13 @@ def get_add_pet_kind_state_keyboard(language='ww'):
     return keyboard
 
 
-def get_add_pet_breed_keyboard(language='ww'):
+def get_add_pet_breed_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
 
 
-def get_add_pet_sex_keyboard(language='ww'):
+def get_add_pet_sex_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['male_pet_btn'])
     keyboard.add(DICTIONARY[language]['female_pet_btn'])
@@ -41,31 +41,31 @@ def get_add_pet_sex_keyboard(language='ww'):
     return keyboard
 
 
-def get_add_pet_description_keyboard(language='ww'):
+def get_add_pet_description_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
 
 
-def get_lost_pet_keyboard(language='ww'):
+def get_lost_pet_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
 
 
-def get_help_keyboard(language='ww'):
+def get_help_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
 
 
-def get_add_pet_age_keyboard(language='ww'):
+def get_add_pet_age_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
 
 
-def get_add_pet_confirmation_keyboard(language='ww'):
+def get_add_pet_confirmation_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['yes_btn'])
     keyboard.add(DICTIONARY[language]['no_btn'])
@@ -73,7 +73,7 @@ def get_add_pet_confirmation_keyboard(language='ww'):
     return keyboard
 
 
-def get_want_take_pet_keybord(language='ww'):
+def get_want_take_pet_keybord(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(DICTIONARY[language]['dog_btn'],
                  DICTIONARY[language]['cat_btn'])
