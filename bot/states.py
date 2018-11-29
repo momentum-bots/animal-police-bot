@@ -1,5 +1,6 @@
 from bot_object import bot
 from keyboards import *
+from config import ADMIN_CHAT_ID
 
 from database import Pet
 from mongoengine import Q
@@ -66,9 +67,11 @@ def lost_pet_state(message, user, is_entry=False):
         if message.text == DICTIONARY[user.language]['back_btn']:
             return True, 'main_menu_state'
         else:
-            bot.send_message('-274799020',
-                             message.text + '\n' + '<a href="tg://user?id=%d">%s</a>'
-                             % (user.user_id, DICTIONARY[user.language]['owner_user']),
+            bot.send_message(ADMIN_CHAT_ID,
+                             '{0}\n<a href="tg://user?id={1}">{2}</a>'.format(
+                                 message.text,
+                                 user.user_id,
+                                 DICTIONARY[user.language]['owner_user']),
                              parse_mode='HTML')
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_lost_msg'])
@@ -362,5 +365,4 @@ def want_take_pet_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['use_keyboard_msg'],
                              reply_markup=get_want_take_pet_keybord(user.language))
-
     return False, ''
