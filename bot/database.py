@@ -14,7 +14,7 @@ class User(Document):
     last_name = StringField()
     state = StringField()
     language = StringField(choices=LANGUAGES, default=LANGUAGES[0])
-    current_pet = IntField()
+    current_pet = IntField(default=-1)
     current_pet_by_filters = ListField(IntField())
 
 
