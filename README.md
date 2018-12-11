@@ -12,4 +12,7 @@ DATABASE_NAME = 'animal_police_db'
 
 DATABASE_LOGIN = 'user'
 DATABASE_PASSWORD = 'passsswooord!'
+
+
+ADMIN_CHAT_ID = '-291234148'
 ```

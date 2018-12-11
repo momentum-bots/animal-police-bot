@@ -81,3 +81,15 @@ def get_want_take_pet_keybord(language='ru'):
                  DICTIONARY[language]['show_all_btn'])
     keyboard.add(DICTIONARY[language]['back_btn'])
     return keyboard
+
+
+def get_moder_keyboard(language='ru', callback_data=''):
+    keyboard = types.InlineKeyboardMarkup()
+    apply_button = types.InlineKeyboardButton(
+        text=DICTIONARY[language]['apply_btn'],
+        callback_data=str(callback_data) + 'apply')
+    deny_button = types.InlineKeyboardButton(
+        text=DICTIONARY[language]['deny_btn'],
+        callback_data=str(callback_data) + 'deny')
+    keyboard.row(apply_button, deny_button)
+    return keyboard
