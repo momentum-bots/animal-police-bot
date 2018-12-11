@@ -2,8 +2,10 @@ from bot_object import bot
 from keyboards import *
 from config import ADMIN_CHAT_ID
 
-from database import Pet
+from database import Pet, User
 from mongoengine import Q
+
+import re
 
 
 def choose_language_state(message, user, is_entry=False):
@@ -254,8 +256,20 @@ def add_pet_confirmation_state(message, user, is_entry=False):
     else:
         if message.text == DICTIONARY[user.language]['yes_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
-            pet.view = True
+            # pet.view = True
             pet.save()
+            bot.send_message(ADMIN_CHAT_ID,
+                             DICTIONARY[user.language]['print_info_msg'].format(
+                                 pet.kind,
+                                 (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
+                                  DICTIONARY[user.language]['male_pet_btn']),
+                                 pet.breed,
+                                 pet.age,
+                                 pet.description,
+                                 pet.user_id),
+                             reply_markup=get_moder_keyboard(language=user.language,
+                                                             callback_data=pet.pet_id),
+                             parse_mode='html')
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['add_ok_pet_msg'])
             return True, 'main_menu_state'
@@ -373,3 +387,49 @@ def want_take_pet_state(message, user, is_entry=False):
                              DICTIONARY[user.language]['use_keyboard_msg'],
                              reply_markup=get_want_take_pet_keybord(user.language))
     return False, ''
+
+
+def callback_handler(call, user):
+    pet = Pet.objects(pet_id=re.search('[0-9]+', call.data).group()).first()
+    if pet:
+        if 'apply' in call.data:
+            pet.view = True
+            pet.save()
+            user = User.objects(user_id=pet.user_id).first()
+            if user:
+                bot.send_message(
+                    user.user_id,
+                    DICTIONARY[user.language]['applied_msg']
+                )
+        else:
+            user = User.objects(user_id=pet.user_id).first()
+            if user:
+                bot.send_message(
+                    user.user_id,
+                    DICTIONARY[user.language]['denied_msg']
+                )
+        bot.edit_message_reply_markup(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=types.InlineKeyboardMarkup()
+        )
+    else:
+        bot.edit_message_text(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            text='X'
+        )
+        bot.edit_message_reply_markup(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=types.ReplyKeyboardRemove())
+    bot.answer_callback_query(call.id)
+
+
+def admin_chat_event_handler(message):
+    animal_id = re.search('[0-9]+', message.text).group()
+    print(animal_id)
+
+
+def inline_callback_handler(call, user):
+    bot.answer_callback_query(call.id)

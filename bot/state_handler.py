@@ -29,3 +29,16 @@ def go_to_state(message, state_name: str, user: User):
     user.state = state_name
     user.save()
     get_state_and_process(message, user, is_entry=True)
+
+
+def process_callback_without_state(call, user: User):
+    # Если сообщение из чата с ботом
+    if call.message:
+        callback_handler(call, user)
+    # Если сообщение из инлайн-режима
+    elif call.inline_message_id:
+        inline_callback_handler(call, user)
+
+
+def process_without_state_message(message):
+    admin_chat_event_handler(message)
