@@ -33,6 +33,13 @@ def get_add_pet_breed_keyboard(language='ru'):
     return keyboard
 
 
+def get_add_pet_name_keyboard(language='ru'):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(DICTIONARY[language]['add_pet_no_name_btn'])
+    keyboard.add(DICTIONARY[language]['back_btn'])
+    return keyboard
+
+
 def get_add_pet_sex_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['male_pet_btn'])
@@ -65,6 +72,12 @@ def get_add_pet_age_keyboard(language='ru'):
     return keyboard
 
 
+def get_add_pet_photo_keyboard(language='ru'):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(DICTIONARY[language]['back_btn'])
+    return keyboard
+
+
 def get_add_pet_confirmation_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(DICTIONARY[language]['yes_btn'])
@@ -83,8 +96,12 @@ def get_want_take_pet_keybord(language='ru'):
     return keyboard
 
 
-def get_moder_keyboard(language='ru', callback_data=''):
+def get_moder_keyboard(language='ru', callback_data='', pet_photo=''):
     keyboard = types.InlineKeyboardMarkup()
+    url_btn = types.InlineKeyboardButton(
+        text=DICTIONARY[language]['url_btn'],
+        url=pet_photo)
+    keyboard.add(url_btn)
     apply_button = types.InlineKeyboardButton(
         text=DICTIONARY[language]['apply_btn'],
         callback_data=str(callback_data) + 'apply')
@@ -92,4 +109,23 @@ def get_moder_keyboard(language='ru', callback_data=''):
         text=DICTIONARY[language]['deny_btn'],
         callback_data=str(callback_data) + 'deny')
     keyboard.row(apply_button, deny_button)
+    return keyboard
+
+
+def get_photos_keyboard(language='ru', pets=[]):
+    keyboard = types.InlineKeyboardMarkup()
+    for idx, pet in enumerate(pets):
+        url_btn = types.InlineKeyboardButton(
+            text=DICTIONARY[language]['urls_btn'].format(str(idx+1)),
+            url=pet.photo_link)
+        keyboard.add(url_btn)
+    return keyboard
+
+
+def get_photo_keyboard(language='ru', pet_photo=''):
+    keyboard = types.InlineKeyboardMarkup()
+    url_btn = types.InlineKeyboardButton(
+            text=DICTIONARY[language]['url_btn'],
+            url=pet_photo)
+    keyboard.add(url_btn)
     return keyboard
