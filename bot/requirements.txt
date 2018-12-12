@@ -2,3 +2,4 @@ flask
 mongoengine
 pyTelegramBotApi
 gunicorn
+validators

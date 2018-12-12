@@ -1,3 +1,5 @@
+import validators
+
 from bot_object import bot
 from keyboards import *
 from config import ADMIN_CHAT_ID
@@ -110,7 +112,7 @@ def add_pet_kind_state(message, user, is_entry=False):
             user.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_breed_state'
+            return True, 'add_pet_name_state'
         elif message.text == DICTIONARY[user.language]['cat_btn']:
             pet = Pet(user_id=user.user_id,
                       kind=DICTIONARY[user.language]['cat'])
@@ -119,7 +121,7 @@ def add_pet_kind_state(message, user, is_entry=False):
             user.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_breed_state'
+            return True, 'add_pet_name_state'
         elif message.text == DICTIONARY[user.language]['back_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
@@ -131,6 +133,32 @@ def add_pet_kind_state(message, user, is_entry=False):
             pet.save()
             user.current_pet = pet.pet_id
             user.save()
+            bot.send_message(message.chat.id,
+                             DICTIONARY[user.language]['ok_msg'])
+            return True, 'add_pet_name_state'
+
+    return False, ''
+
+
+def add_pet_name_state(message, user, is_entry=False):
+    if is_entry:
+        bot.send_message(message.chat.id,
+                         DICTIONARY[user.language]['add_pet_name_msg'],
+                         reply_markup=get_add_pet_name_keyboard(user.language))
+    else:
+        if message.text == DICTIONARY[user.language]['add_pet_no_name_btn']:
+            bot.send_message(message.chat.id,
+                             DICTIONARY[user.language]['ok_msg'])
+            return True, 'add_pet_breed_state'
+        elif message.text == DICTIONARY[user.language]['back_btn']:
+            pet = Pet.objects(pet_id=user.current_pet).first()
+            if pet:
+                pet.delete()
+            return True, 'main_menu_state'
+        else:
+            pet = Pet.objects(pet_id=user.current_pet).first()
+            pet.name = message.text
+            pet.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
             return True, 'add_pet_breed_state'
@@ -232,7 +260,34 @@ def add_pet_age_state(message, user, is_entry=False):
             pet.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_confirmation_state'
+            return True, 'add_pet_photo_state'
+
+    return False, ''
+
+
+def add_pet_photo_state(message, user, is_entry=False):
+    if is_entry:
+        bot.send_message(message.chat.id,
+                         DICTIONARY[user.language]['add_pet_photo_msg'],
+                         reply_markup=get_add_pet_photo_keyboard(user.language))
+    else:
+        if message.text == DICTIONARY[user.language]['back_btn']:
+            pet = Pet.objects(pet_id=user.current_pet).first()
+            if pet:
+                pet.delete()
+            return True, 'main_menu_state'
+        else:
+            if validators.url(message.text):
+                pet = Pet.objects(pet_id=user.current_pet).first()
+                pet.photo_link = message.text
+                pet.save()
+                bot.send_message(message.chat.id,
+                                 DICTIONARY[user.language]['ok_msg'])
+                return True, 'add_pet_confirmation_state'
+            else:
+                bot.send_message(message.chat.id,
+                                 DICTIONARY[user.language]['photo_not_valid_msg'])
+                return True, 'add_pet_photo_state'
 
     return False, ''
 
@@ -240,17 +295,24 @@ def add_pet_age_state(message, user, is_entry=False):
 def add_pet_confirmation_state(message, user, is_entry=False):
     if is_entry:
         pet = Pet.objects(pet_id=user.current_pet).first()
-        message_answer = DICTIONARY[user.language]['add_pet_confirmation_state']
-        message_answer += DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
+        message_answer = DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
+                                                                             (pet.name if pet.name is not None else
+                                                                              DICTIONARY[user.language][
+                                                                                  'add_pet_no_name_btn']),
                                                                              (DICTIONARY[user.language][
-                                                                                  'female_pet_btn']
-                                                                              if pet.sex else
+                                                                                  'female_pet_btn'] if pet.sex else
                                                                               DICTIONARY[user.language][
                                                                                   'male_pet_btn']),
-                                                                             pet.breed, pet.age,
-                                                                             pet.description, pet.user_id)
+                                                                             pet.breed,
+                                                                             pet.age,
+                                                                             pet.description,
+                                                                             pet.user_id)
         bot.send_message(message.chat.id,
                          message_answer,
+                         parse_mode='HTML',
+                         reply_markup=get_photo_keyboard(user.language, pet.photo_link))
+        bot.send_message(message.chat.id,
+                         DICTIONARY[user.language]['add_pet_confirmation_state'],
                          parse_mode='HTML',
                          reply_markup=get_add_pet_confirmation_keyboard(user.language))
     else:
@@ -261,6 +323,8 @@ def add_pet_confirmation_state(message, user, is_entry=False):
             bot.send_message(ADMIN_CHAT_ID,
                              DICTIONARY[user.language]['print_info_msg'].format(
                                  pet.kind,
+                                 (pet.name if pet.name is not None else
+                                  DICTIONARY[user.language]['add_pet_no_name_btn']),
                                  (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
                                   DICTIONARY[user.language]['male_pet_btn']),
                                  pet.breed,
@@ -268,7 +332,7 @@ def add_pet_confirmation_state(message, user, is_entry=False):
                                  pet.description,
                                  pet.user_id),
                              reply_markup=get_moder_keyboard(language=user.language,
-                                                             callback_data=pet.pet_id),
+                                                             callback_data=pet.pet_id, pet_photo=pet.photo_link),
                              parse_mode='html')
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['add_ok_pet_msg'])
@@ -301,84 +365,100 @@ def want_take_pet_state(message, user, is_entry=False):
     else:
         if message.text == DICTIONARY[user.language]['dog_btn']:
             message_answer = ''
+            pets = []
             for pet in Pet.objects(Q(kind=DICTIONARY['ua']['dog']) | Q(kind=DICTIONARY['ru']['dog'])):
                 if pet.view:
-                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
-                                                                                         (DICTIONARY[user.language][
-                                                                                              'female_pet_btn']
-                                                                                          if pet.sex else
-                                                                                          DICTIONARY[user.language][
-                                                                                              'male_pet_btn']),
-                                                                                         pet.breed, pet.age,
-                                                                                         pet.description, pet.user_id)
+                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(
+                        pet.kind,
+                        (pet.name if pet.name is not None else
+                         DICTIONARY[user.language]['no_name']),
+                        (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
+                         DICTIONARY[user.language]['male_pet_btn']),
+                        pet.breed,
+                        pet.age,
+                        pet.description,
+                        pet.user_id)
+                    pets.append(pet)
             if message_answer == '':
                 bot.send_message(message.chat.id,
                                  DICTIONARY[user.language]['not_found_pet_msg'],
                                  parse_mode='HTML')
             else:
                 bot.send_message(message.chat.id,
-                                 message_answer,
+                                 message_answer, reply_markup=get_photos_keyboard(user.language, pets),
                                  parse_mode='HTML')
         elif message.text == DICTIONARY[user.language]['cat_btn']:
             message_answer = ''
+            pets = []
             for pet in Pet.objects(Q(kind=DICTIONARY['ua']['cat']) | Q(kind=DICTIONARY['ru']['cat'])):
                 if pet.view:
-                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
-                                                                                         (DICTIONARY[user.language][
-                                                                                              'female_pet_btn']
-                                                                                          if pet.sex else
-                                                                                          DICTIONARY[user.language][
-                                                                                              'male_pet_btn']),
-                                                                                         pet.breed, pet.age,
-                                                                                         pet.description, pet.user_id)
+                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(
+                        pet.kind,
+                        (pet.name if pet.name is not None else
+                         DICTIONARY[user.language]['no_name']),
+                        (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
+                         DICTIONARY[user.language]['male_pet_btn']),
+                        pet.breed,
+                        pet.age,
+                        pet.description,
+                        pet.user_id)
+                    pets.append(pet)
             if message_answer == '':
                 bot.send_message(message.chat.id,
                                  DICTIONARY[user.language]['not_found_pet_msg'],
                                  parse_mode='HTML')
             else:
                 bot.send_message(message.chat.id,
-                                 message_answer,
+                                 message_answer, reply_markup=get_photos_keyboard(user.language, pets),
                                  parse_mode='HTML')
         elif message.text == DICTIONARY[user.language]['different_btn']:
             message_answer = ''
+            pets = []
             for pet in Pet.objects():
-                if pet.view and pet.kind != DICTIONARY['ru']['dog'] and pet.kind != DICTIONARY['ru']['cat']  \
+                if pet.view and pet.kind != DICTIONARY['ru']['dog'] and pet.kind != DICTIONARY['ru']['cat'] \
                         and pet.kind != DICTIONARY['ua']['dog'] and pet.kind != DICTIONARY['ua']['cat']:
-                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
-                                                                                         (DICTIONARY[user.language][
-                                                                                              'female_pet_btn']
-                                                                                          if pet.sex else
-                                                                                          DICTIONARY[user.language][
-                                                                                              'male_pet_btn']),
-                                                                                         pet.breed, pet.age,
-                                                                                         pet.description, pet.user_id)
+                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(
+                        pet.kind,
+                        (pet.name if pet.name is not None else
+                         DICTIONARY[user.language]['no_name']),
+                        (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
+                         DICTIONARY[user.language]['male_pet_btn']),
+                        pet.breed,
+                        pet.age,
+                        pet.description,
+                        pet.user_id)
+                    pets.append(pet)
             if message_answer == '':
                 bot.send_message(message.chat.id,
                                  DICTIONARY[user.language]['not_found_pet_msg'],
                                  parse_mode='HTML')
             else:
                 bot.send_message(message.chat.id,
-                                 message_answer,
+                                 message_answer, reply_markup=get_photos_keyboard(user.language, pets),
                                  parse_mode='HTML')
         elif message.text == DICTIONARY[user.language]['show_all_btn']:
+            pets = []
             message_answer = ''
             for pet in Pet.objects():
                 if pet.view:
-                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
-                                                                                         (DICTIONARY[user.language][
-                                                                                              'female_pet_btn']
-                                                                                          if pet.sex else
-                                                                                          DICTIONARY[user.language][
-                                                                                              'male_pet_btn']),
-                                                                                         pet.breed, pet.age,
-                                                                                         pet.description, pet.user_id)
+                    message_answer += DICTIONARY[user.language]['print_info_msg'].format(
+                        pet.kind,
+                        (pet.name if pet.name is not None else
+                         DICTIONARY[user.language]['no_name']),
+                        (DICTIONARY[user.language]['female_pet_btn'] if pet.sex else
+                         DICTIONARY[user.language]['male_pet_btn']),
+                        pet.breed,
+                        pet.age,
+                        pet.description,
+                        pet.user_id)
+                    pets.append(pet)
             if message_answer == '':
                 bot.send_message(message.chat.id,
                                  DICTIONARY[user.language]['not_found_pet_msg'],
                                  parse_mode='HTML')
             else:
                 bot.send_message(message.chat.id,
-                                 message_answer,
+                                 message_answer, reply_markup=get_photos_keyboard(user.language, pets),
                                  parse_mode='HTML')
         elif message.text == DICTIONARY[user.language]['back_btn']:
             return True, 'main_menu_state'
@@ -403,6 +483,7 @@ def callback_handler(call, user):
                 )
         else:
             user = User.objects(user_id=pet.user_id).first()
+            pet.delete()
             if user:
                 bot.send_message(
                     user.user_id,
@@ -411,8 +492,7 @@ def callback_handler(call, user):
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            reply_markup=types.InlineKeyboardMarkup()
-        )
+            reply_markup=get_photo_keyboard(pet_photo=pet.photo_link))
     else:
         bot.edit_message_text(
             chat_id=call.message.chat.id,

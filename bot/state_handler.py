@@ -11,7 +11,9 @@ states = {'choose_language_state': choose_language_state,
           'add_pet_confirmation_state': add_pet_confirmation_state,
           'want_take_pet_state': want_take_pet_state,
           'lost_pet_state': lost_pet_state,
-          'help_state': help_state}
+          'help_state': help_state,
+          'add_pet_name_state': add_pet_name_state,
+          'add_pet_photo_state': add_pet_photo_state}
 
 
 def get_state_and_process(message, user: User, is_entry=False):

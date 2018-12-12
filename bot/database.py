@@ -21,9 +21,11 @@ class User(Document):
 class Pet(Document):
     pet_id = SequenceField()
     user_id = IntField(required=True)
+    name = StringField()
     kind = StringField()
     sex = BooleanField(default=False)    # False - мужской, True - женский
     breed = StringField()
     age = StringField()
     description = StringField()
+    photo_link = StringField()
     view = BooleanField(default=False)  # Можно ли отображать
