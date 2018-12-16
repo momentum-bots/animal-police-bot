@@ -45,6 +45,25 @@ def handle_message(message):
         print(e)
 
 
+@bot.message_handler(content_types=['photo'])
+def handle_message(message):
+    try:
+        if str(message.chat.id) == config.ADMIN_CHAT_ID:
+            process_without_state_message(message)
+        user = User.objects(user_id=message.from_user.id).first()
+        if user is None:
+            user = User(user_id=message.from_user.id,
+                        username=message.from_user.username,
+                        first_name=message.from_user.first_name,
+                        last_name=message.from_user.last_name,
+                        state='choose_language_state'
+                        )
+            user.save()
+        get_state_and_process(message, user)
+    except Exception as e:
+        print(e)
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     user = User.objects(user_id=call.from_user.id).first()

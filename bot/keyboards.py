@@ -96,12 +96,8 @@ def get_want_take_pet_keybord(language='ru'):
     return keyboard
 
 
-def get_moder_keyboard(language='ru', callback_data='', pet_photo=''):
+def get_moder_keyboard(language='ru', callback_data=''):
     keyboard = types.InlineKeyboardMarkup()
-    url_btn = types.InlineKeyboardButton(
-        text=DICTIONARY[language]['url_btn'],
-        url=pet_photo)
-    keyboard.add(url_btn)
     apply_button = types.InlineKeyboardButton(
         text=DICTIONARY[language]['apply_btn'],
         callback_data=str(callback_data) + 'apply')
@@ -112,20 +108,11 @@ def get_moder_keyboard(language='ru', callback_data='', pet_photo=''):
     return keyboard
 
 
-def get_photos_keyboard(language='ru', pets=[]):
-    keyboard = types.InlineKeyboardMarkup()
-    for idx, pet in enumerate(pets):
-        url_btn = types.InlineKeyboardButton(
-            text=DICTIONARY[language]['urls_btn'].format(str(idx+1)),
-            url=pet.photo_link)
-        keyboard.add(url_btn)
-    return keyboard
-
-
-def get_photo_keyboard(language='ru', pet_photo=''):
-    keyboard = types.InlineKeyboardMarkup()
-    url_btn = types.InlineKeyboardButton(
-            text=DICTIONARY[language]['url_btn'],
-            url=pet_photo)
-    keyboard.add(url_btn)
-    return keyboard
+# def get_photos_keyboard(language='ru', pets=[]):
+#     keyboard = types.InlineKeyboardMarkup()
+#     for idx, pet in enumerate(pets):
+#         url_btn = types.InlineKeyboardButton(
+#             text=DICTIONARY[language]['urls_btn'].format(str(idx+1)),
+#             url=pet.photo_link)
+#         keyboard.add(url_btn)
+#     return keyboard
