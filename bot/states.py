@@ -200,14 +200,14 @@ def add_pet_sex_state(message, user, is_entry=False):
             pet.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_description_state'
+            return True, 'add_pet_age_state'
         elif message.text == DICTIONARY[user.language]['female_pet_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             pet.sex = True
             pet.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_description_state'
+            return True, 'add_pet_age_state'
         elif message.text == DICTIONARY[user.language]['back_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
@@ -217,28 +217,6 @@ def add_pet_sex_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['use_keyboard_msg'],
                              reply_markup=get_add_pet_sex_keyboard(user.language))
-
-    return False, ''
-
-
-def add_pet_description_state(message, user, is_entry=False):
-    if is_entry:
-        bot.send_message(message.chat.id,
-                         DICTIONARY[user.language]['add_pet_description_msg'],
-                         reply_markup=get_add_pet_description_keyboard(user.language))
-    else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
-            pet = Pet.objects(pet_id=user.current_pet).first()
-            if pet:
-                pet.delete()
-            return True, 'main_menu_state'
-        else:
-            pet = Pet.objects(pet_id=user.current_pet).first()
-            pet.description = message.text
-            pet.save()
-            bot.send_message(message.chat.id,
-                             DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_age_state'
 
     return False, ''
 
@@ -260,7 +238,44 @@ def add_pet_age_state(message, user, is_entry=False):
             pet.save()
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
-            return True, 'add_pet_photo_state'
+            return True, 'add_pet_description_state'
+
+    return False, ''
+
+
+def add_pet_description_state(message, user, is_entry=False):
+    if is_entry:
+        pet = Pet.objects(pet_id=user.current_pet).first()
+        symbols_left = 900 - len(pet.kind) - len(pet.name if pet.name else '') - len(pet.breed) - len(pet.age) - len(DICTIONARY[user.language][
+                                                                                 'female_pet_btn'] if pet.sex else
+                                                                             DICTIONARY[user.language][
+                                                                                 'male_pet_btn'])
+        bot.send_message(message.chat.id,
+                         DICTIONARY[user.language]['add_pet_description_msg'].format(symbols_left),
+                         reply_markup=get_add_pet_description_keyboard(user.language))
+    else:
+        if message.text == DICTIONARY[user.language]['back_btn']:
+            pet = Pet.objects(pet_id=user.current_pet).first()
+            if pet:
+                pet.delete()
+            return True, 'main_menu_state'
+        else:
+            pet = Pet.objects(pet_id=user.current_pet).first()
+            symbols_left = 900 - len(pet.kind) - len(pet.name if pet.name else '') - len(pet.breed) - len(pet.age) - len(DICTIONARY[user.language][
+                                                                                 'female_pet_btn'] if pet.sex else
+                                                                             DICTIONARY[user.language][
+                                                                                 'male_pet_btn'])
+            if len(message.text) <= symbols_left:
+                pet = Pet.objects(pet_id=user.current_pet).first()
+                pet.description = message.text
+                pet.save()
+                bot.send_message(message.chat.id,
+                                 DICTIONARY[user.language]['ok_msg'])
+                return True, 'add_pet_photo_state'
+            else:
+                bot.send_message(message.chat.id,
+                                 DICTIONARY[user.language]['add_pet_description_bad_msg'])
+                return True, 'add_pet_description_state'
 
     return False, ''
 
@@ -429,7 +444,7 @@ def want_take_pet_state(message, user, is_entry=False):
                                        photo=pet.photo_link,
                                        caption=message_answer,
                                        parse_mode='HTML')
-                if message_answer=='':
+                if message_answer == '':
                     if message_answer == '':
                         bot.send_message(message.chat.id,
                                          DICTIONARY[user.language]['not_found_pet_msg'],
