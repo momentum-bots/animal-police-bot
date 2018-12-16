@@ -246,10 +246,19 @@ def add_pet_age_state(message, user, is_entry=False):
 def add_pet_description_state(message, user, is_entry=False):
     if is_entry:
         pet = Pet.objects(pet_id=user.current_pet).first()
-        symbols_left = 900 - len(pet.kind) - len(pet.name if pet.name else '') - len(pet.breed) - len(pet.age) - len(DICTIONARY[user.language][
-                                                                                 'female_pet_btn'] if pet.sex else
-                                                                             DICTIONARY[user.language][
-                                                                                 'male_pet_btn'])
+        symbols_left = 1024 - len(DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
+                                                                                     (
+                                                                                         pet.name if pet.name is not None else
+                                                                                         DICTIONARY[user.language][
+                                                                                             'add_pet_no_name_btn']),
+                                                                                     (DICTIONARY[user.language][
+                                                                                          'female_pet_btn'] if pet.sex else
+                                                                                      DICTIONARY[user.language][
+                                                                                          'male_pet_btn']),
+                                                                                     pet.breed,
+                                                                                     pet.age,
+                                                                                     '',
+                                                                                     pet.user_id))
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['add_pet_description_msg'].format(symbols_left),
                          reply_markup=get_add_pet_description_keyboard(user.language))
@@ -261,10 +270,18 @@ def add_pet_description_state(message, user, is_entry=False):
             return True, 'main_menu_state'
         else:
             pet = Pet.objects(pet_id=user.current_pet).first()
-            symbols_left = 900 - len(pet.kind) - len(pet.name if pet.name else '') - len(pet.breed) - len(pet.age) - len(DICTIONARY[user.language][
+            symbols_left = 1024 - len(DICTIONARY[user.language]['print_info_msg'].format(pet.kind,
+                                                                            (pet.name if pet.name is not None else
+                                                                             DICTIONARY[user.language][
+                                                                                 'add_pet_no_name_btn']),
+                                                                            (DICTIONARY[user.language][
                                                                                  'female_pet_btn'] if pet.sex else
                                                                              DICTIONARY[user.language][
-                                                                                 'male_pet_btn'])
+                                                                                 'male_pet_btn']),
+                                                                            pet.breed,
+                                                                            pet.age,
+                                                                            '',
+                                                                            pet.user_id))
             if len(message.text) <= symbols_left:
                 pet = Pet.objects(pet_id=user.current_pet).first()
                 pet.description = message.text
