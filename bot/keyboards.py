@@ -107,12 +107,3 @@ def get_moder_keyboard(language='ru', callback_data=''):
     keyboard.row(apply_button, deny_button)
     return keyboard
 
-
-# def get_photos_keyboard(language='ru', pets=[]):
-#     keyboard = types.InlineKeyboardMarkup()
-#     for idx, pet in enumerate(pets):
-#         url_btn = types.InlineKeyboardButton(
-#             text=DICTIONARY[language]['urls_btn'].format(str(idx+1)),
-#             url=pet.photo_link)
-#         keyboard.add(url_btn)
-#     return keyboard
