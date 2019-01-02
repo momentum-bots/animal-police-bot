@@ -16,6 +16,7 @@ class User(Document):
     language = StringField(choices=LANGUAGES, default=LANGUAGES[0])
     current_pet = IntField(default=-1)
     current_pet_by_filters = ListField(IntField())
+    is_admin = BooleanField(default=False)
 
 
 class Pet(Document):

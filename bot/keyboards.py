@@ -86,7 +86,7 @@ def get_add_pet_confirmation_keyboard(language='ru'):
     return keyboard
 
 
-def get_want_take_pet_keybord(language='ru'):
+def get_want_take_pet_keyboard(language='ru'):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(DICTIONARY[language]['dog_btn'],
                  DICTIONARY[language]['cat_btn'])
@@ -107,3 +107,16 @@ def get_moder_keyboard(language='ru', callback_data=''):
     keyboard.row(apply_button, deny_button)
     return keyboard
 
+
+def get_admin_keyboard(language='ru'):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(DICTIONARY[language]['sender_btn'],
+                 DICTIONARY[language]['adm_info_btn'])
+    keyboard.add(DICTIONARY[language]['back_btn'])
+    return keyboard
+
+
+def get_back_keyboard(language='ru'):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(DICTIONARY[language]['back_btn'])
+    return keyboard

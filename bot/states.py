@@ -1,11 +1,12 @@
-import validators
-
 from bot_object import bot
 from keyboards import *
 from config import ADMIN_CHAT_ID
 
 from database import Pet, User
 from mongoengine import Q
+
+from threading import Thread
+from sender import send_message_to_users
 
 import re
 
@@ -55,6 +56,8 @@ def main_menu_state(message, user, is_entry=False):
         elif message.text == DICTIONARY[user.language]['info_btn']:
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['in_progress_msg'])
+        elif message.text == DICTIONARY['ww']['admin_command']:
+            return True, 'admin_state'
         else:
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['use_keyboard_msg'],
@@ -390,7 +393,7 @@ def want_take_pet_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['want_take_pet_msg'],
-                         reply_markup=get_want_take_pet_keybord(user.language))
+                         reply_markup=get_want_take_pet_keyboard(user.language))
     else:
         if message.text == DICTIONARY[user.language]['dog_btn']:
             pets = Pet.objects(Q(kind=DICTIONARY['ua']['dog']) | Q(kind=DICTIONARY['ru']['dog']))
@@ -499,7 +502,7 @@ def want_take_pet_state(message, user, is_entry=False):
         else:
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['use_keyboard_msg'],
-                             reply_markup=get_want_take_pet_keybord(user.language))
+                             reply_markup=get_want_take_pet_keyboard(user.language))
     return False, ''
 
 
@@ -541,8 +544,53 @@ def callback_handler(call, user):
 
 def admin_chat_event_handler(message):
     animal_id = re.search('[0-9]+', message.text).group()
-    print(animal_id)
 
 
 def inline_callback_handler(call, user):
     bot.answer_callback_query(call.id)
+
+
+def admin_state(message, user, is_entry=False):
+    if not user.is_admin:
+        return True, 'main_menu_state'
+    if is_entry:
+        bot.send_message(
+            message.chat.id,
+            DICTIONARY[user.language]['admin_msg'],
+            reply_markup=get_admin_keyboard(user.language)
+        )
+    else:
+        if message.text == DICTIONARY[user.language]['sender_btn']:
+            return True, 'sender_state'
+        elif message.text == DICTIONARY[user.language]['adm_info_btn']:
+            pass
+        elif message.text == DICTIONARY[user.language]['back_btn']:
+            return True, 'main_menu_state'
+        else:
+            bot.send_message(
+                message.chat.id,
+                DICTIONARY[user.language]['use_keyboard_msg'],
+                reply_markup=get_admin_keyboard(user.language))
+    return False, ''
+
+
+def sender_state(message, user, is_entry=False):
+    if not user.is_admin:
+        return True, 'main_menu_state'
+    if is_entry:
+        bot.send_message(
+            message.chat.id,
+            DICTIONARY[user.language]['enter_message_to_send_msg'],
+            reply_markup=get_back_keyboard(user.language)
+        )
+    else:
+        if message.text == DICTIONARY[user.language]['back_btn']:
+            return True, 'admin_state'
+        else:
+            Thread(target=send_message_to_users,
+                   args=[bot,
+                         User.objects,
+                         message.text]
+                   ).start()
+            return True, 'admin_state'
+    return False, ''
