@@ -28,7 +28,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
-    try:
+#     try:
         if str(message.chat.id) == config.ADMIN_CHAT_ID:
             process_without_state_message(message)
         user = User.objects(user_id=message.from_user.id).first()
@@ -41,8 +41,8 @@ def handle_message(message):
                         )
             user.save()
         get_state_and_process(message, user)
-    except Exception as e:
-        print(e)
+    # except Exception as e:
+    #     print(e)
 
 
 @bot.message_handler(content_types=['photo'])
