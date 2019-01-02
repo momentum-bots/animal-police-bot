@@ -69,9 +69,9 @@ def lost_pet_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['lost_msg'],
-                         reply_markup=get_lost_pet_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             return True, 'main_menu_state'
         else:
             bot.send_message(ADMIN_CHAT_ID,
@@ -91,9 +91,9 @@ def help_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['help_money_msg'],
-                         reply_markup=get_help_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             return True, 'main_menu_state'
         else:
             return True, 'main_menu_state'
@@ -125,7 +125,7 @@ def add_pet_kind_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
             return True, 'add_pet_name_state'
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -153,7 +153,7 @@ def add_pet_name_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
             return True, 'add_pet_breed_state'
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -173,9 +173,9 @@ def add_pet_breed_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['add_pet_breed_msg'],
-                         reply_markup=get_add_pet_breed_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -211,7 +211,7 @@ def add_pet_sex_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['ok_msg'])
             return True, 'add_pet_age_state'
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -228,9 +228,9 @@ def add_pet_age_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['add_pet_age_msg'],
-                         reply_markup=get_add_pet_age_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -264,9 +264,9 @@ def add_pet_description_state(message, user, is_entry=False):
                                                                                      pet.user_id))
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['add_pet_description_msg'].format(symbols_left),
-                         reply_markup=get_add_pet_description_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -304,9 +304,9 @@ def add_pet_photo_state(message, user, is_entry=False):
     if is_entry:
         bot.send_message(message.chat.id,
                          DICTIONARY[user.language]['add_pet_photo_msg'],
-                         reply_markup=get_add_pet_photo_keyboard(user.language))
+                         reply_markup=get_back_menu_keyboard(user.language))
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -376,7 +376,7 @@ def add_pet_confirmation_state(message, user, is_entry=False):
             bot.send_message(message.chat.id,
                              DICTIONARY[user.language]['add_no_pet_msg'])
             return True, 'main_menu_state'
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             pet = Pet.objects(pet_id=user.current_pet).first()
             if pet:
                 pet.delete()
@@ -497,7 +497,7 @@ def want_take_pet_state(message, user, is_entry=False):
                 bot.send_message(message.chat.id,
                                  DICTIONARY[user.language]['not_found_pet_msg'],
                                  parse_mode='HTML')
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             return True, 'main_menu_state'
         else:
             bot.send_message(message.chat.id,
@@ -564,7 +564,7 @@ def admin_state(message, user, is_entry=False):
             return True, 'sender_state'
         elif message.text == DICTIONARY[user.language]['adm_info_btn']:
             pass
-        elif message.text == DICTIONARY[user.language]['back_btn']:
+        elif message.text == DICTIONARY[user.language]['back_menu_btn']:
             return True, 'main_menu_state'
         else:
             bot.send_message(
@@ -581,10 +581,10 @@ def sender_state(message, user, is_entry=False):
         bot.send_message(
             message.chat.id,
             DICTIONARY[user.language]['enter_message_to_send_msg'],
-            reply_markup=get_back_keyboard(user.language)
+            reply_markup=get_back_menu_keyboard(user.language)
         )
     else:
-        if message.text == DICTIONARY[user.language]['back_btn']:
+        if message.text == DICTIONARY[user.language]['back_menu_btn']:
             return True, 'admin_state'
         else:
             Thread(target=send_message_to_users,
